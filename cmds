@@ -1,0 +1,40 @@
+
+## combine back face with suzanne face (i.e. intermediat face); the result cannot be rendered directly with blender
+
+### expecting blender depth maps being rendered with a transparent background and both images of the same size (if not use e.g. -gravity center as well)
+#### should the background be black make it transparent with -transparent black, perhaps use -fuzz, but doing it with blender is better ;-)
+
+convert digital_imaging_08_01_bf.png digital_imaging_08_01_sf.png -composite digital_imaging_08_01_bf+sf.png
+
+
+~/programme/stereograph-0.30a/stereograph -w 128 -A -R -b digital_imaging_08_01_bf+sf.png -t ~/stereograph_textures/noise_bw-lin_256x256.png -o digital_imaging_08_01_bf+sf_sis-w128-A-R_02.png
+
+
+~/programme/stereograph-0.30a/stereograph -w 128 -A -R -b digital_imaging_08_01_ff.png -t ~/stereograph_textures/noise_bw-lin_256x256.png -o digital_imaging_08_01_ff_sis-w128-A-R_02.png
+
+## overlay ff image with 50% transparency over bf+sf
+### order does not matter for -blend but for -dissolve
+#### using composite instead of convert -composeite is easier here
+#### see http://www.imagemagick.org/Usage/compose/#blend
+
+composite -blend 50 digital_imaging_08_01_bf+sf_sis-w128-A-R_02.png digital_imaging_08_01_ff_sis-w128-A-R_02.png digital_imaging_08_01_bf+sf+ff_sis-w128-A-R_02__.png
+
+
+## overlay ff image with white->alpha over bf+sf
+### IM and Gimp result differ! Why??? Perhaps Gimp displaces layers a bit???
+
+convert digital_imaging_08_01_bf+sf_sis-w128-A-R_02.png \( digital_imaging_08_01_ff_sis-w128-A-R_02.png -transparent white \) -composite digital_imaging_08_01_bf+sf+ff_sis-w128-A-R_02_convert-transparent_white.png
+
+
+##creating a "what to see" image by blending (50%) and replacing alpha by black
+
+convert \( -background black -flatten +matte digital_imaging_08_01_bf+sf.png \) digital_imaging_08_01_ff.png -compose blend -define compose:args=50 -composite  digital_imaging_08_01_bf+sf+ff.png
+
+##and the same but inverted:
+
+convert \( -background black -flatten +matte digital_imaging_08_01_bf+sf.png \) digital_imaging_08_01_ff.png -compose blend -define compose:args=50 -composite -negate digital_imaging_08_01_bf+sf+ff_inv.png
+
+
+
+
+
