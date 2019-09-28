@@ -1,0 +1,3 @@
+[submodule "stereograph"]
+	path = stereograph
+	url = https://github.com/romangrothausmann/stereograph
